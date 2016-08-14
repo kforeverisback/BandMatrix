@@ -22,7 +22,7 @@ function varargout = BMGui(varargin)
 
 % Edit the above text to modify the response to help BMGui
 
-% Last Modified by GUIDE v2.5 11-Aug-2016 20:08:01
+% Last Modified by GUIDE v2.5 13-Aug-2016 23:15:51
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,20 +81,33 @@ k = str2double(handles.txt_gen_K.String);
 r = str2double(handles.txt_gen_R.String);
 density = str2double(handles.txt_gen_density.String) / 100;
 
+input_file_name = handles.txt_gen_input.String;
 randomized = handles.chk_randomize.Value == 1;
 write_params = handles.chk_writeparams.Value == 1;
-create_sparse_first = handles.chk_sparse_matrix.Value == 1;
-if(create_sparse_first)
+read_sparse = handles.radio_gen_sparse_input.Value == 1;
+generate_sparse = handles.radio_gen_sparse_gen.Value == 1;
+
+if(generate_sparse)
+    creation_mode = 'sparse_gen';
     if(density <= 0 || density > 1)
     uiwait(msgbox('These conditions must be met: 0 <= k,r < n, 0 < density < 100','Error in value Range','modal'));
     return
-    end
-elseif(k >= n || r >= n || k < 0 || r < 0)
+    end    
+elseif(read_sparse)
+    creation_mode = 'sparse_input';
+else(read_sparse)
+    creation_mode = 'band_gen';
+    if(k >= n || r >= n || k < 0 || r < 0)
     uiwait(msgbox('These conditions must be met: 0 <= k,r < n, 0 < density < 100','Error in value Range','modal'));
     return
+    end
 end
 
-band_create2(n,k,r,density, create_sparse_first, randomized, write_params, filename);
+if(read_sparse)
+    
+end
+
+band_create2([n,k,r,density], creation_mode, input_file_name, randomized, write_params, filename);
 
 
 % --- Executes on button press in radio_c_manual.
@@ -178,20 +191,30 @@ else % Or Read file/Auto
 end
 
 
-% --- Executes on button press in chk_sparse_matrix.
-function chk_sparse_matrix_Callback(hObject, eventdata, handles)
-% hObject    handle to chk_sparse_matrix (see GCBO)
+% --- Executes when selected object is changed in uibuttongroup7.
+function uibuttongroup7_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in uibuttongroup7 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if(get(hObject,'Value') == 0) % Unchecked
-    handles.txt_gen_K.Enable = 'on';
-    handles.txt_gen_R.Enable = 'on';
-    handles.chk_randomize.Enable = 'on';
-    handles.txt_gen_density.Enable = 'off';
-else %Checked
+if(~isempty(strfind(hObject.Tag,'sparse_gen')))
+    handles.txt_gen_input.Enable = 'off';
+    handles.txt_gen_N.Enable = 'on';
     handles.txt_gen_K.Enable = 'off';
     handles.txt_gen_R.Enable = 'off';
-    handles.chk_randomize.Enable = 'off';
     handles.txt_gen_density.Enable = 'on';
+    handles.chk_randomize.Enable = 'on';
+elseif(~isempty(strfind(hObject.Tag,'sparse_input')))
+    handles.txt_gen_input.Enable = 'on';
+    handles.txt_gen_N.Enable = 'off';
+    handles.txt_gen_K.Enable = 'off';
+    handles.txt_gen_R.Enable = 'off';
+    handles.txt_gen_density.Enable = 'off';
+    handles.chk_randomize.Enable = 'off';
+else
+    handles.txt_gen_input.Enable = 'off';
+    handles.txt_gen_N.Enable = 'on';
+    handles.txt_gen_K.Enable = 'on';
+    handles.txt_gen_R.Enable = 'on';
+    handles.txt_gen_density.Enable = 'off';
+    handles.chk_randomize.Enable = 'on';
 end
-% Hint: get(hObject,'Value') returns toggle state of chk_sparse_matrix

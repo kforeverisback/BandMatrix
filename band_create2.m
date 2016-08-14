@@ -1,12 +1,22 @@
-function [ A, total_non_zero, Non_Zero_Percent ] = band_create2( n,k,r, density, create_sparse_first, randomize_values, write_parameters, output_file )
+function [ A, total_non_zero, Non_Zero_Percent ] = band_create2( n_k_r_density, creation_mode, input_file_name, randomize_values, write_parameters, output_file )
 
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 %n=20;k=4;r=1;
 
-if(islogical(create_sparse_first) && create_sparse_first)
-    [A,k,r] = sparse_matrix_to_band(n, density);
-else
+n=n_k_r_density(1);
+k = n_k_r_density(2);
+r = n_k_r_density(3);
+density=n_k_r_density(4);
+
+if(strcmp(creation_mode, 'sparse_gen') == 1)
+    ASparse = sprandn(n,n,density)*1000;
+    [A,k,r] = sparse_matrix_to_band(ASparse);
+elseif(strcmp(creation_mode, 'sparse_input') == 1)
+    ASparse = dlmread(input_file_name);
+    n = size(ASparse,1);
+    [A,k,r] = sparse_matrix_to_band(ASparse);
+elseif(strcmp(creation_mode, 'band_gen') == 1)
     if(islogical(randomize_values) && randomize_values)
     %% Randomized values
         A = randomized_band_matrix(n , k , r);
@@ -15,6 +25,7 @@ else
         A = fixed_value_band_matrix(n , k , r);
     end
 end
+
 A=A(1:n,1:n);
 display(sprintf('Create Matrix with parameters n=%d,k=%d,r=%d', n, k, r));
 
@@ -41,7 +52,15 @@ syms i
 %display(' ');
 end
 
-function [Aout,k,r] = sparse_matrix_to_band(n, density)
+function [Aout,k,r] = sparse_matrix_to_band(As)
+    p = symrcm(As);
+    Ar = As(p,p);
+    Aout = double(int32(full(Ar)));
+    
+    [k,r] = detect_k_r(Aout);
+end
+
+function [Aout,k,r] = sparse_matrix_read(n, density)
     As = sprandn(n,n,density);
     p = symrcm(As);
     Ar = As(p,p);
