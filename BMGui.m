@@ -53,6 +53,7 @@ function BMGui_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to BMGui (see VARARGIN)
 
 % Choose default command line output for BMGui
+%hObject.UserData = struct('Sparse_Input_File','sparse_matrix.txt','Sparse_Output_File','sparse_mat_out.txt');
 handles.output = hObject;
 
 % Update handles structure
@@ -95,16 +96,12 @@ if(generate_sparse)
     end    
 elseif(read_sparse)
     creation_mode = 'sparse_input';
-else(read_sparse)
+else
     creation_mode = 'band_gen';
     if(k >= n || r >= n || k < 0 || r < 0)
     uiwait(msgbox('These conditions must be met: 0 <= k,r < n, 0 < density < 100','Error in value Range','modal'));
     return
     end
-end
-
-if(read_sparse)
-    
 end
 
 band_create2([n,k,r,density], creation_mode, input_file_name, randomized, write_params, filename);
@@ -197,14 +194,25 @@ function uibuttongroup7_SelectionChangedFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if(~isempty(strfind(hObject.Tag,'sparse_gen')))
-    handles.txt_gen_input.Enable = 'off';
+    handles.txt_gen_input.Enable = 'on';
+    %handles.figure1.UserData.Sparse_Input_File = handles.txt_gen_input.String;
+    %handles.txt_gen_input.String = handles.figure1.UserData.Sparse_Output_File;
+    handles.txt_gen_input.String = 'sparse_mat_out.txt';
+    handles.label_gen_sparse_input.String = 'Sparse Out :';
+    
     handles.txt_gen_N.Enable = 'on';
     handles.txt_gen_K.Enable = 'off';
     handles.txt_gen_R.Enable = 'off';
     handles.txt_gen_density.Enable = 'on';
     handles.chk_randomize.Enable = 'on';
 elseif(~isempty(strfind(hObject.Tag,'sparse_input')))
+    
+    %handles.figure1.UserData.Sparse_Output_File = handles.txt_gen_input.String;
+    %handles.txt_gen_input.String = handles.figure1.UserData.Sparse_Input_File;
+    handles.txt_gen_input.String = 'spare_matrix.txt';
     handles.txt_gen_input.Enable = 'on';
+    handles.label_gen_sparse_input.String = 'Sparse Input :';
+  
     handles.txt_gen_N.Enable = 'off';
     handles.txt_gen_K.Enable = 'off';
     handles.txt_gen_R.Enable = 'off';
@@ -212,6 +220,10 @@ elseif(~isempty(strfind(hObject.Tag,'sparse_input')))
     handles.chk_randomize.Enable = 'off';
 else
     handles.txt_gen_input.Enable = 'off';
+    %handles.figure1.UserData.Sparse_Output_File = handles.txt_gen_input.String;
+    %handles.txt_gen_input.String = handles.figure1.UserData.Sparse_Input_File;
+    %handles.label_gen_sparse_input.String = 'Sparse Input :';
+    
     handles.txt_gen_N.Enable = 'on';
     handles.txt_gen_K.Enable = 'on';
     handles.txt_gen_R.Enable = 'on';

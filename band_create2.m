@@ -11,6 +11,8 @@ density=n_k_r_density(4);
 
 if(strcmp(creation_mode, 'sparse_gen') == 1)
     ASparse = sprandn(n,n,density)*1000;
+    display('Writing Generated Sparse Matrix');
+    dlmwrite(input_file_name, full(ASparse));
     [A,k,r] = sparse_matrix_to_band(ASparse);
 elseif(strcmp(creation_mode, 'sparse_input') == 1)
     ASparse = dlmread(input_file_name);
