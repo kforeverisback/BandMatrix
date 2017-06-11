@@ -25,6 +25,8 @@ function varargout = BMGui(varargin)
 % Last Modified by GUIDE v2.5 13-Aug-2016 23:15:51
 
 % Begin initialization code - DO NOT EDIT
+global VAL;
+global VAL2
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
@@ -55,7 +57,6 @@ function BMGui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for BMGui
 %hObject.UserData = struct('Sparse_Input_File','sparse_matrix.txt','Sparse_Output_File','sparse_mat_out.txt');
 handles.output = hObject;
-
 % Update handles structure
 guidata(hObject, handles);
 
@@ -126,7 +127,7 @@ if(~isempty(strfind(hObject.Tag,'manual')))
 else
     handles.txt_c_k.Enable = 'off';
     handles.txt_c_r.Enable = 'off';
-end
+    ends
 
 
 % --- Executes when selected object is changed in uibuttongroup4.
